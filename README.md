@@ -44,6 +44,9 @@ Our Team Of TimerCode Tracks Santa & NDDM Is:
 <br>
 <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" style="width:120px;">
 <p>Google</p>
+<br>
+<p>Our Team Helps Us In The Project, NORAD And NORTHCOM And NDDM Helps <br> Us With The Militar Use And The 3D Code. Three.js Santa <br> Is Our Other Workers From Threejs.org With Threejs and webgl workers help. Google Helps Us With The Asset Route Support, Thanks To Our Team To Build NDDM And TimerCode Tracks Santa&reg;.
+</p>
 
 # How To Track Santa Without Coding?
 If You Want Not Make Your Own Tracker, Enter On TimerCode Tracks Santa&reg; <br>
