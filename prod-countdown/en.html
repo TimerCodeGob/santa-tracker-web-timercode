@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TimerCode 2004&copy;</title>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #000022;
+    font-family: monospace;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .censored {
+    margin-top: 40px;
+    font-size: 1.2em;
+    opacity: 0.6;
+    letter-spacing: 2px;
+  }
+
+  .contador {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 60px 0;
+  }
+
+  .box {
+    background: linear-gradient(to bottom, #ccefff, #99ddff 70%, #77ccff 100%);
+    color: #ffffff;
+    font-size: 2.5em;
+    padding: 25px;
+    width: 120px;
+    border-radius: 15px;
+    border: 2px solid #88eeff;
+    box-shadow: 0 0 15px #88f, 0 0 30px #66ccff inset, 0 0 40px #44aaff;
+    text-align: center;
+    transition: all 1s ease;
+  }
+
+  .box.gold {
+    background: linear-gradient(to bottom, #ffd700, #ffcc33 70%, #ffdd44 100%);
+    border-color: #ffee88;
+    box-shadow: 0 0 20px #ffd700, 0 0 40px #ffdd44 inset, 0 0 50px #ffcc00;
+    text-shadow: 0 0 15px #fff;
+  }
+
+  .label {
+    font-size: 0.6em;
+    display: block;
+    margin-top: 6px;
+    opacity: 0.8;
+  }
+
+  canvas#nieve {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="censored">
+  ASSET_FILE_CENSORED_COPYRIGHT
+</div>
+
+<div class="contador" id="contador">
+  <div class="box" id="days"><span class="label">DAYS</span></div>
+  <div class="box" id="hours"><span class="label">HOURS</span></div>
+  <div class="box" id="minutes"><span class="label">MINUTES</span></div>
+  <div class="box" id="seconds"><span class="label">SECONDS</span></div>
+</div>
+
+<canvas id="nieve"></canvas>
+
+<script>
+  const boxes = ["days","hours","minutes","seconds"];
+  const countdownDate = new Date("December 1, 2026").getTime();
+
+  function updateCountdown(){
+    const now = Date.now();
+    const distance = countdownDate - now;
+
+    if(distance < 0){
+      clearInterval(interval);
+      window.location.href = "/en/village/village.html";
+      return;
+    }
+
+    const days = Math.ceil(distance / (1000*60*60*24));
+    const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
+    const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
+    const seconds = Math.floor((distance % (1000*60)) / 1000);
+
+    const values = [days,hours,minutes,seconds];
+
+    boxes.forEach((id,i)=>{
+      document.getElementById(id).childNodes[0].nodeValue = values[i];
+    });
+
+    if(distance < 3000){
+      boxes.forEach(id => document.getElementById(id).classList.add("gold"));
+    }
+  }
+
+  const interval = setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  // ❄️ NIEVE
+  const canvas = document.getElementById("nieve");
+  const ctx = canvas.getContext("2d");
+
+  function resize(){
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+  }
+  resize();
+
+  const flakes = [];
+  const numFlakes = 300;
+
+  for(let i=0;i<numFlakes;i++){
+    flakes.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      r: Math.random()*3+1,
+      d: Math.random()*numFlakes,
+      s: Math.random()*1.5+0.5
+    });
+  }
+
+  let angle = 0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle="white";
+    ctx.beginPath();
+
+    flakes.forEach(f=>{
+      ctx.moveTo(f.x,f.y);
+      ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+    });
+    ctx.fill();
+
+    angle+=0.005;
+    flakes.forEach(f=>{
+      f.y += Math.cos(angle+f.d)+f.s;
+      f.x += Math.sin(angle)*2;
+      if(f.y>canvas.height||f.x>canvas.width||f.x<0){
+        f.x=Math.random()*canvas.width;
+        f.y=-10;
+      }
+    });
+  }
+
+  setInterval(draw,25);
+  addEventListener("resize",resize);
+</script>
+
+</body>
+  </html>
