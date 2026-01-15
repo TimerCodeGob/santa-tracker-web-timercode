@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TimerCode 2003&copy;</title>
+
+<style>
+  body{
+    margin:0;
+    padding:0;
+    background:#000022;
+    font-family:monospace;
+    color:#fff;
+    text-align:center;
+    overflow:hidden;
+    user-select:none;
+  }
+
+  .censored{
+    margin-top:40px;
+    font-size:1.2em;
+    opacity:0.6;
+    letter-spacing:2px;
+  }
+
+  .contador{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    margin:60px 0;
+  }
+
+  .box{
+    background:linear-gradient(to bottom,#ccefff,#99ddff 70%,#77ccff);
+    color:#fff;
+    font-size:2.5em;
+    padding:25px;
+    width:120px;
+    border-radius:15px;
+    border:2px solid #88eeff;
+    box-shadow:0 0 15px #88f,0 0 30px #66ccff inset,0 0 40px #44aaff;
+    transition:all 1s ease;
+  }
+
+  .box.gold{
+    background:linear-gradient(to bottom,#ffd700,#ffcc33 70%,#ffdd44);
+    border-color:#ffee88;
+    box-shadow:0 0 20px #ffd700,0 0 40px #ffdd44 inset,0 0 50px #ffcc00;
+  }
+
+  .label{
+    font-size:.6em;
+    display:block;
+    margin-top:6px;
+    opacity:.8;
+  }
+
+  .btn{
+    display:inline-block;
+    margin:10px;
+    padding:30px 40px;
+    background:#1F2568;
+    border-radius:10px;
+    opacity:.5;
+    pointer-events:none;
+  }
+
+  canvas{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:9999;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="censored">
+  ASSET_FILE_CENSORED_COPYRIGHT
+</div>
+
+<div class="contador" id="contador">
+  <div class="box" id="days"><span class="label">DAYS</span></div>
+  <div class="box" id="hours"><span class="label">HOURS</span></div>
+  <div class="box" id="minutes"><span class="label">MINUTES</span></div>
+  <div class="box" id="seconds"><span class="label">SECONDS</span></div>
+</div>
+
+<div>
+  <div class="btn">ASSET_FILE_CENSORED_COPYRIGHT</div>
+  <div class="btn">ASSET_FILE_CENSORED_COPYRIGHT</div>
+  <div class="btn">ASSET_FILE_CENSORED_COPYRIGHT</div>
+</div>
+
+<canvas id="nieve"></canvas>
+
+<script>
+const boxes=["days","hours","minutes","seconds"];
+const target=new Date("December 24, 2026 00:00:00").getTime();
+
+function update(){
+  const now=Date.now();
+  const diff=target-now;
+
+  if(diff<=0){
+    window.location.href="ASSET_FILE_CENSORED_COPYRIGHT";
+    return;
+  }
+
+  const d=Math.ceil(diff/(1000*60*60*24));
+  const h=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+  const m=Math.floor((diff%(1000*60*60))/(1000*60));
+  const s=Math.floor((diff%(1000*60))/1000);
+
+  const v=[d,h,m,s];
+  boxes.forEach((id,i)=>{
+    document.getElementById(id).childNodes[0].nodeValue=v[i];
+  });
+
+  if(diff<3000){
+    boxes.forEach(id=>document.getElementById(id).classList.add("gold"));
+  }
+}
+setInterval(update,1000);
+update();
+
+// nieve
+const c=document.getElementById("nieve");
+const ctx=c.getContext("2d");
+function resize(){c.width=innerWidth;c.height=innerHeight;}
+resize();
+
+const flakes=[];
+for(let i=0;i<300;i++){
+  flakes.push({
+    x:Math.random()*c.width,
+    y:Math.random()*c.height,
+    r:Math.random()*3+1,
+    d:Math.random()*300,
+    s:Math.random()*1.5+.5
+  });
+}
+
+let a=0;
+function draw(){
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle="#fff";
+  ctx.beginPath();
+  flakes.forEach(f=>{
+    ctx.moveTo(f.x,f.y);
+    ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+  });
+  ctx.fill();
+
+  a+=.005;
+  flakes.forEach(f=>{
+    f.y+=Math.cos(a+f.d)+f.s;
+    f.x+=Math.sin(a)*2;
+    if(f.y>c.height||f.x>c.width||f.x<0){
+      f.x=Math.random()*c.width;
+      f.y=-10;
+    }
+  });
+}
+setInterval(draw,25);
+addEventListener("resize",resize);
+</script>
+
+</body>
+  </html>
