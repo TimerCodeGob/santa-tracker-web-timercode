@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Santa Tracker</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #00ff00; z-index: 10; pointer-events: none; }
+        .radar { background: rgba(0, 30, 0, 0.9); border: 2px solid #00ff00; padding: 15px; border-radius: 5px; box-shadow: 0 0 15px #00ff00; }
+        #city-name { font-size: 1.6em; color: white; font-weight: bold; margin: 5px 0; text-transform: uppercase; }
+        #finalMsg { 
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #900; color: white; padding: 40px; border: 4px solid white; text-align: center; z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <div class="radar">
+            <div style="font-size: 0.8em;">RADAR DE SATÉLITE ACTIVO</div>
+            <div id="city-name">POLO NORTE</div>
+            <div id="country-name" style="color: #888;">INICIANDO RUTA MUNDIAL</div>
+        </div>
+    </div>
+
+    <div id="finalMsg">
+        <h1>🚨 MISIÓN FINALIZADA 🚨</h1>
+        <p>Santa ha visitado todas las ciudades reales y regresado al Polo Norte.</p>
+        <button onclick="location.reload()" style="padding:10px 20px; cursor:pointer;">REINICIAR</button>
+    </div>
+
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        camera.position.z = 15;
+
+        // --- BASE DE DATOS DE CIUDADES REALES ---
+        const stops = [
+            { n: "Polo Norte", c: "Ártico", lat: 90, lon: 0 },
+            { n: "Ciudad Ho Chi Minh", c: "Vietnam", lat: 10.82, lon: 106.63 },
+            { n: "Hanói", c: "Vietnam", lat: 21.02, lon: 105.83 },
+            { n: "Vientián", c: "Laos", lat: 17.97, lon: 102.63 },
+            { n: "Luang Prabang", c: "Laos", lat: 19.88, lon: 102.13 },
+            { n: "Kuala Lumpur", c: "Malasia", lat: 3.13, lon: 101.68 },
+            { n: "George Town", c: "Malasia", lat: 5.41, lon: 100.32 },
+            { n: "Sídney", c: "Australia", lat: -33.86, lon: 151.20 },
+            { n: "Melbourne", c: "Australia", lat: -37.81, lon: 144.96 },
+            { n: "Puerto Moresby", c: "P. N. Guinea", lat: -9.44, lon: 147.18 },
+            { n: "Lae", c: "P. N. Guinea", lat: -6.72, lon: 146.99 },
+            { n: "Conakri", c: "Guinea", lat: 9.50, lon: -13.71 },
+            { n: "Yamena", c: "Chad", lat: 12.13, lon: 15.05 },
+            { n: "El Cairo", c: "Egipto", lat: 30.04, lon: 31.23 },
+            { n: "Adís Abeba", c: "Etiopía", lat: 9.03, lon: 38.74 },
+            { n: "Viena", c: "Austria", lat: 48.20, lon: 16.37 },
+            { n: "Berlín", c: "Alemania", lat: 52.52, lon: 13.40 },
+            { n: "Múnich", c: "Alemania", lat: 48.13, lon: 11.58 },
+            { n: "Tokio", c: "Japón", lat: 35.68, lon: 139.65 },
+            { n: "Osaka", c: "Japón", lat: 34.69, lon: 135.50 },
+            { n: "Seúl", c: "Corea del Sur", lat: 37.56, lon: 126.97 },
+            { n: "Pionyang", c: "Corea del Norte", lat: 39.03, lon: 125.75 },
+            { n: "Budapest", c: "Hungría", lat: 47.49, lon: 19.04 },
+            { n: "Río de Janeiro", c: "Brasil", lat: -22.90, lon: -43.17 },
+            { n: "São Paulo", c: "Brasil", lat: -23.55, lon: -46.63 },
+            { n: "Lima", c: "Perú", lat: -12.04, lon: -77.04 },
+            { n: "Cusco", c: "Perú", lat: -13.53, lon: -71.96 },
+            { n: "Caracas", c: "Venezuela", lat: 10.48, lon: -66.90 },
+            { n: "Bogotá", c: "Colombia", lat: 4.71, lon: -74.07 },
+            { n: "Medellín", c: "Colombia", lat: 6.24, lon: -75.58 },
+            { n: "Ottawa", c: "Canadá", lat: 45.42, lon: -75.69 },
+            { n: "Toronto", c: "Canadá", lat: 43.65, lon: -79.38 },
+            { n: "Nueva York", c: "EE.UU.", lat: 40.71, lon: -74.00 },
+            { n: "Los Ángeles", c: "EE.UU.", lat: 34.05, lon: -118.24 },
+            { n: "Ciudad de México", c: "México", lat: 19.43, lon: -99.13 },
+            { n: "Monterrey", c: "México", lat: 25.68, lon: -100.31 },
+            { n: "Polo Norte", c: "Ártico", lat: 90, lon: 0 }
+        ];
+
+        function latLonToVec3(lat, lon, r) {
+            const phi = (90 - lat) * (Math.PI / 180);
+            const theta = (lon + 180) * (Math.PI / 180);
+            return new THREE.Vector3(-r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+        }
+
+        // --- GLOBO ---
+        const globeGroup = new THREE.Group();
+        const earth = new THREE.Mesh(
+            new THREE.SphereGeometry(5, 64, 64),
+            new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg') })
+        );
+        globeGroup.add(earth);
+        scene.add(globeGroup);
+        scene.add(new THREE.AmbientLight(0xffffff, 2));
+
+        // Labels Reales en Blanco
+        stops.forEach(s => {
+            const canv = document.createElement('canvas');
+            canv.width = 512; canv.height = 128;
+            const ctx = canv.getContext('2d');
+            ctx.fillStyle = 'white'; ctx.font = 'bold 32px Arial'; ctx.textAlign = 'center';
+            ctx.fillText(s.n, 256, 64);
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canv) }));
+            sprite.position.copy(latLonToVec3(s.lat, s.lon, 5.2));
+            sprite.scale.set(4, 1, 1);
+            globeGroup.add(sprite);
+        });
+
+        // Santa Sprite (Santa arriba, Trineo abajo)
+        const sCanv = document.createElement('canvas');
+        sCanv.width = 128; sCanv.height = 128;
+        const sCtx = sCanv.getContext('2d');
+        sCtx.textAlign = 'center'; sCtx.font = '50px serif';
+        sCtx.fillText('🎅', 64, 50); sCtx.fillText('🛷', 64, 100);
+        const santa = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(sCanv) }));
+        santa.position.set(0, 0, 6.2);
+        scene.add(santa);
+
+        // Estela Roja
+        const lineGeo = new THREE.BufferGeometry();
+        const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0xff0000 }));
+        globeGroup.add(line);
+        let pathPoints = [];
+
+        // --- ANIMACIÓN ---
+        let idx = 0, pct = 0;
+        const targetQuat = new THREE.Quaternion();
+
+        function animate() {
+            if (idx >= stops.length - 1) {
+                document.getElementById('finalMsg').style.display = 'block';
+                return;
+            }
+            requestAnimationFrame(animate);
+
+            const p1 = latLonToVec3(stops[idx].lat, stops[idx].lon, 5);
+            const p2 = latLonToVec3(stops[idx+1].lat, stops[idx+1].lon, 5);
+            
+            const currentPos = new THREE.Vector3().lerpVectors(p1, p2, pct);
+            pathPoints.push(currentPos.clone().multiplyScalar(1.01));
+            lineGeo.setFromPoints(pathPoints);
+
+            // Rotación suave del globo (Evita saltos negros)
+            targetQuat.setFromUnitVectors(currentPos.normalize(), new THREE.Vector3(0, 0, 1));
+            globeGroup.quaternion.slerp(targetQuat, 0.05);
+
+            pct += 0.005; 
+            if (pct >= 1) {
+                pct = 0; idx++;
+                document.getElementById('city-name').innerText = stops[idx].n;
+                document.getElementById('country-name').innerText = stops[idx].c;
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.onresize = () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        };
+    </script>
+</body>
+</html>
