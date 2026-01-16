@@ -1,0 +1,43 @@
+{
+  "map": {
+    "position": { "lat": 20.0, "lng": 0.0 },
+    "zoom": 2,
+    "tileLayer": {
+      "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      "attribution": "&copy; OpenStreetMap contributors"
+    }
+  },
+  "markers": [
+    {
+      "name": "Polo Norte",
+      "position": { "lat": 90.0, "lng": 135.0 },
+      "icon": "🎅",
+      "info": "Santa empieza aquí su viaje!"
+    },
+    {
+      "name": "Santa Village, Finlandia",
+      "position": { "lat": 66.5438, "lng": 25.8474 },
+      "icon": "🎅",
+      "info": "Santa está listo para repartir regalos"
+    },
+    {
+      "name": "Tokyo, Japón",
+      "position": { "lat": 35.6895, "lng": 139.6917 },
+      "icon": "🎅",
+      "info": "Tokyo está en la ruta de Santa"
+    },
+    {
+      "name": "Moscow, Rusia",
+      "position": { "lat": 55.7558, "lng": 37.6173 },
+      "icon": "🎅",
+      "info": "Santa cruza Rusia con su trineo"
+    },
+    {
+      "name": "Ciudad de México, México",
+      "position": { "lat": 19.4326, "lng": -99.1332 },
+      "icon": "🎅",
+      "info": "Santa llega a México!"
+    }
+    // Agrega más markers si quieres
+  ]
+}
