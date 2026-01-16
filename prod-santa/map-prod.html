@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Santa Tracker Leaflet</title>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-sA+e2pGv8O/0pNH0Js8iA6gJQtbXQFw5G5mF4w5b9lI="
+  crossorigin=""
+/>
+<style>
+  #map {
+    height: 100vh;
+    width: 100%;
+  }
+  .santa-marker {
+    font-size: 32px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-o9N1jFj3Hg0p2kQTn6hrdPpT6b7c55I5Rtt1ytQQ3o8="
+  crossorigin="">
+</script>
+<script>
+  // Inicializa mapa centrado en el mundo
+  const map = L.map('map').setView([20, 0], 2);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Coordenadas de Santa directamente en el HTML
+  const coords = [
+    { name: "Polo Norte", lat: 90.0, lng: 135.0 },
+    { name: "Santa Village, Finlandia", lat: 66.5438, lng: 25.8474 },
+    { name: "Tokyo, Japón", lat: 35.6895, lng: 139.6917 },
+    { name: "Moscow, Rusia", lat: 55.7558, lng: 37.6173 },
+    { name: "Ciudad de México, México", lat: 19.4326, lng: -99.1332 }
+    // Agrega más coordenadas si quieres
+  ];
+
+  // Crear markers de Santa con emoji
+  coords.forEach(location => {
+    L.marker([location.lat, location.lng], {
+      icon: L.divIcon({
+        className: 'santa-marker',
+        html: '🎅',
+      })
+    }).addTo(map).bindPopup(`<b>${location.name}</b>`);
+  });
+
+  // Animar cámara entre coordenadas
+  let index = 0;
+  setInterval(() => {
+    if (coords.length === 0) return;
+    index = (index + 1) % coords.length;
+    map.panTo([coords[index].lat, coords[index].lng], { animate: true, duration: 1.5 });
+  }, 4000); // cada 4s
+</script>
+</body>
+</html>
