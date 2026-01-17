@@ -82,26 +82,30 @@
     "trackingMetadata": {
       "updateFrequencySeconds": 15,
       "leaflet": {
-        "markerIcon": "YOUR_MARKER",
+        "markerIcon": "santa.png",
         "polylineColor": "#FF0000",
         "popupTemplate": "<b>{{name}}</b>"
       },
       "cesium": {
-        "3DModel": "YOURGLB",
+        "3DModel": "santa_sleigh.glb",
         "trailColor": [1,0,0,1],
         "cameraFollow": true
       },
       "threejs": {
-        "3DModel": "YOUR_GLB",
+        "3DModel": "santa_sleigh_three.glb",
         "trailSegments": 50,
         "speedMultiplier": 1.0
       }
     },
     "simulation": {
-      "enable": false,
+      "enable": true,
       "timeStepSeconds": 10,
       "interpolation": "linear",
-      "randomMagicBoost": true
+      "randomMagicBoost": true,
+      "mode": {
+        "December24": "real-time",
+        "otherDays": "timelapse"
+      }
     }
   }
-      }
+          }
