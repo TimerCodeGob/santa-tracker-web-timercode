@@ -79,10 +79,6 @@
     ]},
     { "group": "Final", "stops": [
       {"n": "POLO NORTE", "lat": 89.9, "lon": 0, "special": "death"}
-    ]},
-    { "credits": "credits", "warn": [
-      { "warn": "This Is Not A Fanmade By Someone Or From Fanmades Links, TimerCode Tracks Santa Created This Complex Json 
-        So You Can Track Santa."}
     ]}
   ]
 }
