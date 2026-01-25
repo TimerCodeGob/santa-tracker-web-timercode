@@ -1,0 +1,84 @@
+{
+  "mission_metadata": {
+    "name": "Santa Global Full Continent Mission",
+    "timezone": "America/Mexico_City",
+    "gmt_offset": -6
+  },
+  "route": [
+    { "group": "Oceania", "stops": [
+      {"n": "Australia", "lat": -25.27, "lon": 133.77},
+      {"n": "New Zealand", "lat": -40.90, "lon": 174.88},
+      {"n": "Fiji", "lat": -17.71, "lon": 178.06},
+      {"n": "Papua New Guinea", "lat": -6.31, "lon": 143.95}
+    ]},
+    { "group": "Asia", "stops": [
+      {"n": "Japan", "lat": 36.20, "lon": 138.25},
+      {"n": "South Korea", "lat": 35.90, "lon": 127.76},
+      {"n": "China", "lat": 35.86, "lon": 104.19},
+      {"n": "Thailand", "lat": 15.87, "lon": 100.99},
+      {"n": "India", "lat": 20.59, "lon": 78.96},
+      {"n": "Vietnam", "lat": 14.05, "lon": 108.27},
+      {"n": "Indonesia", "lat": -0.78, "lon": 113.92},
+      {"n": "Philippines", "lat": 12.87, "lon": 121.77}
+    ]},
+    { "group": "Africa", "stops": [
+      {"n": "South Africa", "lat": -30.55, "lon": 22.93},
+      {"n": "Kenya", "lat": -0.02, "lon": 37.90},
+      {"n": "Egypt", "lat": 26.82, "lon": 30.80},
+      {"n": "Morocco", "lat": 31.79, "lon": -7.09},
+      {"n": "Nigeria", "lat": 9.08, "lon": 8.67},
+      {"n": "Ethiopia", "lat": 9.14, "lon": 40.48}
+    ]},
+    { "group": "Sudamerica", "stops": [
+      {"n": "Argentina", "lat": -38.41, "lon": -63.61},
+      {"n": "Brazil", "lat": -14.23, "lon": -51.92},
+      {"n": "Chile", "lat": -35.67, "lon": -71.54},
+      {"n": "Colombia", "lat": 4.57, "lon": -74.29},
+      {"n": "Peru", "lat": -9.19, "lon": -75.01},
+      {"n": "Venezuela", "lat": 6.42, "lon": -66.58},
+      {"n": "Ecuador", "lat": -1.83, "lon": -78.18}
+    ]},
+    { "group": "Centroamerica", "stops": [
+      {"n": "Panama", "lat": 8.53, "lon": -80.78},
+      {"n": "Costa Rica", "lat": 9.74, "lon": -83.75},
+      {"n": "Nicaragua", "lat": 12.86, "lon": -85.20},
+      {"n": "Honduras", "lat": 15.19, "lon": -86.24},
+      {"n": "El Salvador", "lat": 13.79, "lon": -88.89},
+      {"n": "Guatemala", "lat": 15.78, "lon": -90.23},
+      {"n": "Belize", "lat": 17.18, "lon": -88.49}
+    ]},
+    { "group": "Norteamerica_25_Stops", "stops": [
+      {"n": "Toronto, CAN", "lat": 43.65, "lon": -79.38}, {"n": "Vancouver, CAN", "lat": 49.28, "lon": -123.12},
+      {"n": "Montreal, CAN", "lat": 45.50, "lon": -73.56}, {"n": "Ottawa, CAN", "lat": 45.42, "lon": -75.69},
+      {"n": "Calgary, CAN", "lat": 51.04, "lon": -114.07}, {"n": "New York, USA", "lat": 40.71, "lon": -74.00},
+      {"n": "Los Angeles, USA", "lat": 34.05, "lon": -118.24}, {"n": "Chicago, USA", "lat": 41.87, "lon": -87.62},
+      {"n": "Houston, USA", "lat": 29.76, "lon": -95.36}, {"n": "Phoenix, USA", "lat": 33.44, "lon": -112.07},
+      {"n": "Philadelphia, USA", "lat": 39.95, "lon": -75.16}, {"n": "San Antonio, USA", "lat": 29.42, "lon": -98.49},
+      {"n": "San Diego, USA", "lat": 32.71, "lon": -117.16}, {"n": "Dallas, USA", "lat": 32.77, "lon": -96.79},
+      {"n": "San Jose, USA", "lat": 37.33, "lon": -121.88}, {"n": "Austin, USA", "lat": 30.26, "lon": -97.74},
+      {"n": "Jacksonville, USA", "lat": 30.33, "lon": -81.65}, {"n": "Fort Worth, USA", "lat": 32.75, "lon": -97.33},
+      {"n": "Columbus, USA", "lat": 39.96, "lon": -82.99}, {"n": "Charlotte, USA", "lat": 35.22, "lon": -80.84},
+      {"n": "San Francisco, USA", "lat": 37.77, "lon": -122.41}, {"n": "Indianapolis, USA", "lat": 39.76, "lon": -86.15},
+      {"n": "Seattle, USA", "lat": 47.60, "lon": -122.33}, {"n": "Denver, USA", "lat": 39.73, "lon": -104.99},
+      {"n": "Washington D.C, USA", "lat": 38.90, "lon": -77.03}
+    ]},
+    { "group": "Mexico_25_Stops", "stops": [
+      {"n": "CDMX", "lat": 19.43, "lon": -99.13}, {"n": "Guadalajara", "lat": 20.65, "lon": -103.34},
+      {"n": "Monterrey", "lat": 25.68, "lon": -100.31}, {"n": "Puebla", "lat": 19.04, "lon": -98.20},
+      {"n": "Toluca", "lat": 19.28, "lon": -99.65}, {"n": "Tijuana", "lat": 32.51, "lon": -117.03},
+      {"n": "León", "lat": 21.12, "lon": -101.68}, {"n": "Juárez", "lat": 31.69, "lon": -106.42},
+      {"n": "Zapopan", "lat": 20.72, "lon": -103.39}, {"n": "Mérida", "lat": 20.96, "lon": -89.59},
+      {"n": "San Luis Potosí", "lat": 22.15, "lon": -100.98}, {"n": "Aguascalientes", "lat": 21.88, "lon": -102.29},
+      {"n": "Hermosillo", "lat": 29.07, "lon": -110.95}, {"n": "Saltillo", "lat": 25.42, "lon": -101.00},
+      {"n": "Mexicali", "lat": 32.62, "lon": -115.45}, {"n": "Culiacán", "lat": 24.80, "lon": -107.39},
+      {"n": "Cancún", "lat": 21.16, "lon": -86.85}, {"n": "Acapulco", "lat": 16.85, "lon": -99.82},
+      {"n": "Querétaro", "lat": 20.58, "lon": -100.38}, {"n": "Torreón", "lat": 25.54, "lon": -103.40},
+      {"n": "Morelia", "lat": 19.70, "lon": -101.18}, {"n": "Veracruz", "lat": 19.17, "lon": -96.13},
+      {"n": "Villahermosa", "lat": 17.98, "lon": -92.93}, {"n": "Pachuca", "lat": 20.10, "lon": -98.75},
+      {"n": "Oaxaca", "lat": 17.07, "lon": -96.72}
+    ]},
+    { "group": "Final", "stops": [
+      {"n": "POLO NORTE", "lat": 89.9, "lon": 0, "special": "death"}
+    ]}
+  ]
+}
