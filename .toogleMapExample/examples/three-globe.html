@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Santa Tracker Pro: Seguimiento Total</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
+        #canvas-3d { width: 100vw; height: 100vh; display: block; }
+        #map-2d { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; display: none; z-index: 5; }
+        
+        #hud {
+            position: absolute; top: 20px; left: 20px; color: #00ffcc;
+            background: rgba(0, 10, 0, 0.9); border: 2px solid #00ffcc;
+            padding: 15px; border-radius: 5px; pointer-events: none; z-index: 100;
+        }
+        #controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 101; }
+        button {
+            padding: 15px 30px; background: #ff0000; color: white; border: 2px solid #fff; 
+            font-family: 'Courier New'; font-weight: bold; cursor: pointer; border-radius: 50px;
+            box-shadow: 0 0 20px rgba(255,0,0,0.6); transition: 0.3s;
+        }
+        button:hover { background: #00ffcc; color: #000; box-shadow: 0 0 20px #00ffcc; }
+        .santa-emoji { font-size: 30px; text-align: center; line-height: 30px; }
+    </style>
+</head>
+<body>
+
+<div id="hud">
+    <div id="clock">00:00:00</div>
+    <div style="color: #ff0000; font-weight: bold;">ESTADO: <span id="status">EN RUTA</span></div>
+    <div>OBJETIVO: <span id="target">CARGANDO...</span></div>
+    <div style="font-size: 0.8em; opacity: 0.7;">COORD: <span id="coords">---</span></div>
+</div>
+
+<div id="controls">
+    <button id="toggleMode">CAMBIAR A VISTA 2D (SISTEMA OSM)</button>
+</div>
+
+<div id="map-2d"></div>
+<canvas id="canvas-3d"></canvas>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+        }
+    }
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    const JSON_URL = 'https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/json/countries.json';
+    const RADIUS = 12;
+    let scene, camera, renderer, world, soldier, mixer, santaHat;
+    let route = [], currentIdx = 0, isDead = false, is2D = false;
+    let map, santaMarker;
+
+    async function init() {
+        // --- 3D SETUP ---
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+        renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas-3d'), antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+        world = new THREE.Group();
+        scene.add(world);
+
+        const earth = new THREE.Mesh(
+            new THREE.SphereGeometry(RADIUS, 64, 64),
+            new THREE.MeshStandardMaterial({ map: new THREE.TextureLoader().load('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg') })
+        );
+        world.add(earth);
+
+        // --- CARGA DE RUTA (7 BLOQUES) ---
+        const data = await (await fetch(JSON_URL)).json();
+        
+        // Función para inyectar puntos
+        const addP = (c, reg) => {
+            if(c) route.push({ n: c.name, reg, lat: parseFloat(c.latitude), lon: parseFloat(c.longitude), pos: latLonToVec3(parseFloat(c.latitude), parseFloat(c.longitude), RADIUS) });
+        };
+
+        // 1-5: Oceania, Asia, Africa, Sudamerica, Centroamerica
+        ["Oceania", "Asia", "Africa", "South America", "Central America"].forEach(r => {
+            data.filter(c => c.region === r || c.subregion === r).slice(0, 5).forEach(c => addP(c, r));
+        });
+        // 6: Canada & USA (25 ciudades sim)
+        const na = data.filter(c => c.name === "Canada" || c.name === "United States");
+        for(let i=0; i<25; i++) addP(na[i%2], "Norteamérica");
+        // 7: México (25 ciudades sim)
+        const mx = data.find(c => c.name === "Mexico");
+        for(let i=0; i<25; i++) addP(mx, "México");
+        
+        route.push({ n: "POLO NORTE", reg: "Ártico", lat: 89.9, lon: 0, pos: latLonToVec3(89.9, 0, RADIUS) });
+
+        loadSoldier();
+        init2DMap();
+    }
+
+    function init2DMap() {
+        map = L.map('map-2d', { zoomControl: false }).setView([0, 0], 3);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+        const santaIcon = L.divIcon({ html: '🎅', className: 'santa-emoji', iconSize: [40, 40] });
+        santaMarker = L.marker([0, 0], { icon: santaIcon }).addTo(map);
+    }
+
+    function latLonToVec3(lat, lon, r) {
+        const phi = (90 - lat) * (Math.PI / 180);
+        const theta = (lon + 180) * (Math.PI / 180);
+        return new THREE.Vector3(-r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+    }
+
+    function loadSoldier() {
+        new GLTFLoader().load('https://threejs.org/examples/models/gltf/Soldier.glb', (gltf) => {
+            soldier = gltf.scene; soldier.scale.set(0.4, 0.4, 0.4); world.add(soldier);
+            soldier.traverse(obj => {
+                if (obj.isBone && obj.name.toLowerCase().includes("head")) {
+                    santaHat = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.3, 16), new THREE.MeshStandardMaterial({color: 0xff0000}));
+                    santaHat.position.y = 0.25; obj.add(santaHat);
+                }
+            });
+            mixer = new THREE.AnimationMixer(soldier);
+            mixer.clipAction(gltf.animations.find(a => a.name === 'Walk')).play();
+            animate();
+        });
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        if (mixer) mixer.update(0.016);
+
+        // Reloj CDMX GMT-6
+        const mx = new Date().toLocaleString("en-US", {timeZone: "America/Mexico_City"});
+        document.getElementById('clock').innerText = new Date(mx).toTimeString().split(' ')[0];
+
+        if (soldier && !isDead) {
+            const target = route[currentIdx];
+            document.getElementById('target').innerText = target.n;
+            document.getElementById('coords').innerText = `${target.lat.toFixed(2)} / ${target.lon.toFixed(2)}`;
+
+            // Movimiento 3D
+            soldier.position.lerp(target.pos, 0.03);
+            const normal = soldier.position.clone().normalize();
+            soldier.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+
+            // Cámara Follow 3D
+            const camPos = soldier.position.clone().add(normal.clone().multiplyScalar(5)).sub(soldier.getWorldDirection(new THREE.Vector3()).multiplyScalar(8));
+            camera.position.lerp(camPos, 0.1);
+            camera.lookAt(soldier.position);
+
+            // --- SEGUIMIENTO 2D ---
+            santaMarker.setLatLng([target.lat, target.lon]);
+            if(is2D) {
+                map.panTo([target.lat, target.lon], { animate: true, duration: 0.5 });
+            }
+
+            if (soldier.position.distanceTo(target.pos) < 0.3) {
+                if (target.n === "POLO NORTE") {
+                    isDead = true;
+                    document.getElementById('status').innerText = "MISIÓN CUMPLIDA";
+                    mixer.stopAllAction();
+                    mixer.clipAction(soldier.animations.find(a => a.name === 'Death')).setLoop(THREE.LoopOnce, 1).play();
+                    
+                    // Zoom Out 3D
+                    const zOut = setInterval(() => {
+                        camera.position.multiplyScalar(1.02);
+                        if (camera.position.length() > 60) clearInterval(zOut);
+                    }, 30);
+
+                    setTimeout(() => {
+                        const wp = new THREE.Vector3(); santaHat.getWorldPosition(wp);
+                        world.add(santaHat); santaHat.position.copy(wp);
+                        world.remove(soldier);
+                    }, 3000);
+                } else {
+                    currentIdx++;
+                }
+            }
+        }
+        renderer.render(scene, camera);
+    }
+
+    document.getElementById('toggleMode').addEventListener('click', () => {
+        is2D = !is2D;
+        const btn = document.getElementById('toggleMode');
+        const mapDiv = document.getElementById('map-2d');
+        const canvas3d = document.getElementById('canvas-3d');
+
+        if (is2D) {
+            btn.innerText = "REGRESAR AL MODO 3D";
+            mapDiv.style.display = 'block';
+            canvas3d.style.display = 'none';
+            map.invalidateSize();
+            map.setView(santaMarker.getLatLng(), 5);
+        } else {
+            btn.innerText = "CAMBIAR A VISTA 2D (SISTEMA OSM)";
+            mapDiv.style.display = 'none';
+            canvas3d.style.display = 'block';
+        }
+    });
+
+    init();
+</script>
+</body>
+</html>
